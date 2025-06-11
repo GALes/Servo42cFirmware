@@ -1,10 +1,20 @@
 # A project translates into one executable or library.
 project:
-  
+
   groups:
     - group: Source Files
       files:
         - file: ./main.c
+        - file: RTE/Device/HC32L130F8UA/base_types.h
+        - file: driver/inc/ddl_device.h
+        - file: driver/inc/ddl.h
+        - file: driver/src/ddl.c
+        - file: driver/inc/sysctrl.h
+        - file: driver/src/sysctrl.c
+        - file: RTE/Device/HC32L130F8UA/interrupts_hc32l13x.h
+        - file: RTE/Device/HC32L130F8UA/interrupts_hc32l13x.c
+        - file: driver/inc/gpio.h
+        - file: driver/src/gpio.c
 
   # List components to use for your application.
   # A software component is a re-usable unit that may be configurable.
