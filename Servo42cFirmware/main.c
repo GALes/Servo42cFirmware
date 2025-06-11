@@ -1,76 +1,61 @@
+/*
+ * Servo42C Firmware – Version v0.1 (Blinky)
+ * =========================================
+ *
+ * Target MCU  : HC32L130F8UA (Cortex-M0+ @ 48 MHz)
+ * Board       : MKS SERVO42C
+ * Function    : Blink on-board LED D3 wired to PC14
+ *
+ * Toolchain   : Keil Studio / VS Code + Arm-Clang or GCC
+ * Drivers     : Use the HC32L130 DDL drivers from:
+ *               ├── RTE/Device/HC32L130F8UA        (CMSIS + startup)
+ *               └── driver/{inc,src}/              (DDL peripheral drivers)
+ */
+
 #include "RTE_Components.h"
-#include CMSIS_device_header
+#include CMSIS_device_header             /* Device definitions */
+#include "ddl.h"                         /* Delay and common macros */
+#include "gpio.h"                        /* GPIO driver */
+#include "sysctrl.h"                     /* System control for peripheral clocks */
 
-// #include "base_types.h"
+/* -------------------------------------------------------------------------- */
+#define FW_VERSION             "v0.1"
 
-// int main() {
-//     for (;;) {
-//     }
-// }
+#define LED_PORT               GpioPortC
+#define LED_PIN                GpioPin14
+#define BLINK_PERIOD_MS        (250U)
 
-
-#include "gpio.h"
-
-// int main() {
-//     for (;;) {
-//     }
-// }
-
-
-/*****************************************************************************
- * Function implementation - global ('extern') and local ('static')
- ******************************************************************************/
-static void App_LedInit(void);
-
-/**
- ******************************************************************************
- ** \brief  Main function of project
- **
- ** \return uint32_t return value, if needed
- **
- ** This sample
- **
- ******************************************************************************/
-int32_t main(void)
-{
-    ///< LED端口初始化
-    App_LedInit();
-
-    while(1)
-    {
-        // ///< LED点亮
-        // Gpio_SetIO(STK_LED_PORT, STK_LED_PIN);
-        // delay1ms(1000);
-
-        // ///< LED关闭
-        // Gpio_ClrIO(STK_LED_PORT, STK_LED_PIN);
-        // delay1ms(1000);
-    }
-}
-
-static void App_LedInit(void)
+/* -------------------------------------------------------------------------- */
+static void LedGpioInit(void)
 {
     stc_gpio_cfg_t stcGpioCfg;
-    
-    ///< 打开GPIO外设时钟门控
-    Sysctrl_SetPeripheralGate(SysctrlPeripheralGpio, TRUE); 
-    
-    ///< 端口方向配置->输出(其它参数与以上（输入）配置参数一致)
-    stcGpioCfg.enDir = GpioDirOut;
-    ///< 端口上下拉配置->下拉
-    stcGpioCfg.enPu = GpioPuDisable;
-    stcGpioCfg.enPd = GpioPdEnable;
-    
-    ///< LED关闭
-    Gpio_ClrIO(STK_LED_PORT, STK_LED_PIN);
-    
-    ///< GPIO IO LED端口初始化
-    Gpio_Init(STK_LED_PORT, STK_LED_PIN, &stcGpioCfg);
-    
 
+    /* Clear structure */
+    DDL_ZERO_STRUCT(stcGpioCfg);
+
+    /* 1) Enable GPIO clock */
+    Sysctrl_SetPeripheralGate(SysctrlPeripheralGpio, TRUE);
+
+    /* 2) Configure PC14 as output */
+    stcGpioCfg.enDir  = GpioDirOut;
+    Gpio_Init(LED_PORT, LED_PIN, &stcGpioCfg);
+
+    /* 3) Turn off LED initially */
+    Gpio_ClrIO(LED_PORT, LED_PIN);
 }
 
-/******************************************************************************
- * EOF (not truncated)
- ******************************************************************************/
+/* -------------------------------------------------------------------------- */
+int32_t main(void)
+{
+    /* System clock is already configured in startup */
 
+    LedGpioInit();
+
+    while (1)
+    {
+        Gpio_SetIO(LED_PORT, LED_PIN);
+        delay1ms(BLINK_PERIOD_MS);
+        Gpio_ClrIO(LED_PORT, LED_PIN);
+        delay1ms(BLINK_PERIOD_MS);
+    }
+}
