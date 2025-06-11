@@ -1,0 +1,36 @@
+# A solution is a collection of related projects that share same base configuration.
+solution:
+  created-for: CMSIS-Toolbox@2.6.0
+  cdefault: # use CMSIS-Toolbox default Compiler options
+
+  # Compilers that can be selected
+  select-compiler:
+    - compiler: AC6
+    - compiler: GCC
+    - compiler: IAR
+    - compiler: CLANG
+
+  # List the packs that define the device and/or board.
+  packs:
+    - pack: HDSC::HC32L130
+    - pack: ARM::CMSIS
+
+  # List different hardware targets that are used to deploy the solution.
+  target-types:
+    - type: HC32L130F8UA
+      device: HC32L130F8UA
+
+  # List of different build configurations.
+  build-types:
+    - type: Debug
+      debug: on
+      optimize: none
+
+    - type: Release
+      debug: off
+      optimize: balanced
+
+  # List related projects.
+  projects:
+    - project: Servo42cFirmware/Servo42cFirmware.cproject.yml
+  compiler: AC6

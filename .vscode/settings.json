@@ -1,0 +1,6 @@
+{
+    "clangd.arguments": [
+        "--compile-commands-dir=c:\\Users\\PC1600\\Documents\\Visual code\\Servo42cFirmware\\out\\Servo42cFirmware\\HC32L130F8UA\\Debug"
+    ],
+    "debug.hideSlowPreLaunchWarning": true
+}

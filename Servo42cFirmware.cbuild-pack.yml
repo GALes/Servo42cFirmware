@@ -1,0 +1,8 @@
+cbuild-pack:
+  resolved-packs:
+    - resolved-pack: ARM::CMSIS@6.1.0
+      selected-by-pack:
+        - ARM::CMSIS
+    - resolved-pack: HDSC::HC32L130@1.0.1
+      selected-by-pack:
+        - HDSC::HC32L130
