@@ -1,55 +1,55 @@
-# Análisis del Hardware: MKS SERVO42C V1.0
+# Hardware Analysis: MKS SERVO42C V1.0
 
-Este documento describe los componentes principales y la funcionalidad de la placa controladora de motor paso a paso en lazo cerrado MKS SERVO42C V1.0.
+This document describes the main components and functionality of the MKS SERVO42C V1.0 closed-loop stepper motor controller board.
 
-## Esquema
+## Schematic
 
-![Esquema del MKS SERVO42C](MKS-SERVO42C-schematic.png)
+![MKS SERVO42C Schematic](MKS-SERVO42C-schematic.png)
 
-Puedes descargar el esquema completo en formato PDF desde este [enlace](./MKS%20SERVO42C-schematic.pdf).
+You can download the full schematic in PDF format from this [link](./MKS%20SERVO42C-schematic.pdf).
 
-### Resumen General
+### General Overview
 
-Este circuito es un controlador de motor paso a paso (stepper) en lazo cerrado. Esto significa que no solo envía señales para mover el motor, sino que también utiliza un sensor de posición para verificar si el motor se ha movido a la posición deseada, corrigiendo cualquier error. Es una mejora significativa sobre los controladores de motor paso a paso estándar (como el A4988 o DRV8825) que operan en lazo abierto.
+This circuit is a closed-loop stepper motor controller. This means that it not only sends signals to move the motor, but also uses a position sensor to verify if the motor has moved to the desired position, correcting any errors. It is a significant improvement over standard open-loop stepper motor controllers (such as the A4988 or DRV8825).
 
-### Componentes Clave y Funcionalidad
+### Key Components and Functionality
 
-1.  **Microcontrolador (MCU) - `U1: HC32L130F8UA`**:
-    *   **Función**: Es el cerebro de la placa. Este MCU de 32 bits (ARM Cortex-M0+) ejecuta el firmware que controla toda la lógica.
-    *   **Detalles**: Recibe las señales de control `Stp` (paso), `Dir` (dirección) y `En` (habilitación) desde una placa de control principal (como una placa de impresora 3D). Procesa los datos del encoder magnético (`U4`) para determinar la posición del motor y luego comanda el driver del motor (`U2`, `U3`, `U5`, `U6`) para mover el motor paso a paso de acuerdo a las señales de entrada y la retroalimentación del encoder. También maneja la comunicación para la pantalla OLED y los botones de la interfaz de usuario.
+1.  **Microcontroller (MCU) - `U1: HC32L130F8UA`**:
+    *   **Function**: It is the brain of the board. This 32-bit MCU (ARM Cortex-M0+) executes the firmware that controls all the logic.
+    *   **Details**: It receives the control signals `Stp` (step), `Dir` (direction), and `En` (enable) from a main control board (like a 3D printer board). It processes the data from the magnetic encoder (`U4`) to determine the motor's position and then commands the motor driver (`U2`, `U3`, `U5`, `U6`) to move the stepper motor according to the input signals and the encoder's feedback. It also handles communication for the OLED display and the user interface buttons.
 
-2.  **Driver de Motor (Puente-H) - `U2, U3, U5, U6: EG3013` y MOSFETs `Q4-Q11: CJ3400`**:
-    *   **Función**: Esta es la sección de potencia que maneja la corriente que va al motor.
-    *   **Detalles**: El `EG3013` es un "gate driver" que toma las señales lógicas de bajo voltaje del MCU y las convierte en señales de alto voltaje/corriente capaces de activar y desactivar rápidamente los MOSFETs (`CJ3400`). Los MOSFETs están dispuestos en una configuración de "Puente-H", que permite que la corriente fluya en cualquier dirección a través de las bobinas del motor, permitiendo así el control preciso de los pasos del motor. Hay dos puentes-H, uno para cada una de las dos bobinas (A y B) del motor paso a paso.
+2.  **Motor Driver (H-Bridge) - `U2, U3, U5, U6: EG3013` and MOSFETs `Q4-Q11: CJ3400`**:
+    *   **Function**: This is the power section that handles the current going to the motor.
+    *   **Details**: The `EG3013` is a gate driver that takes the low-voltage logic signals from the MCU and converts them into high-voltage/current signals capable of quickly switching the MOSFETs (`CJ3400`) on and off. The MOSFETs are arranged in an "H-Bridge" configuration, which allows current to flow in either direction through the motor coils, thus allowing for precise control of the motor's steps. There are two H-bridges, one for each of the two coils (A and B) of the stepper motor.
 
-3.  **Encoder Magnético - `U4: MT6816CT-ACD`**:
-    *   **Función**: Este es el sensor de posición que cierra el lazo de control.
-    *   **Detalles**: Es un sensor de efecto Hall que detecta la orientación de un imán que se monta en el eje trasero del motor. El `MT6816CT` proporciona la posición angular absoluta del eje del motor al MCU a través de una interfaz SPI. Esto permite al firmware saber exactamente dónde está el motor en todo momento y corregir si pierde pasos.
+3.  **Magnetic Encoder - `U4: MT6816CT-ACD`**:
+    *   **Function**: This is the position sensor that closes the control loop.
+    *   **Details**: It is a Hall-effect sensor that detects the orientation of a magnet mounted on the rear shaft of the motor. The `MT6816CT` provides the absolute angular position of the motor shaft to the MCU via an SPI interface. This allows the firmware to know exactly where the motor is at all times and to correct if it loses steps.
 
-4.  **Fuente de Alimentación y Reguladores**:
-    *   **`U7: MD8942`**: Un regulador de voltaje "buck" (reductor) que probablemente toma el voltaje de entrada principal del motor (V+) y lo reduce a un voltaje intermedio (VC2).
-    *   **`U12: CL9195A33L5M`**: Un regulador de voltaje LDO (Low-Dropout) que toma el voltaje intermedio y lo reduce a 3.3V. Este voltaje de 3.3V es el que alimenta al MCU y a la mayoría de los componentes lógicos de la placa.
+4.  **Power Supply and Regulators**:
+    *   **`U7: MD8942`**: A "buck" (step-down) voltage regulator that likely takes the main motor input voltage (V+) and reduces it to an intermediate voltage (VC2).
+    *   **`U12: CL9195A33L5M`**: An LDO (Low-Dropout) voltage regulator that takes the intermediate voltage and reduces it to 3.3V. This 3.3V voltage is what powers the MCU and most of the logic components on the board.
 
-5.  **Interfaz de Entrada/Salida**:
-    *   **`J3`**: Conector de entrada de control. Aquí es donde se conectan las señales `Stp`, `Dir`, `En` y la alimentación desde la placa base de la impresora 3D o del controlador CNC.
-    *   **`J6`**: Conector de salida para el motor paso a paso. Las 4 líneas (`A+`, `A-`, `B+`, `B-`) se conectan a las bobinas del motor.
-    *   **`J2 (LCD)`**: Conector para una pantalla OLED (I2C), que permite mostrar información como la posición del motor, el estado, etc.
-    *   **`J1`**: Conector para comunicación serie (UART - `TX`/`RX`), probablemente para depuración o configuración avanzada.
-    *   **Botones (`Next`, `Enter`, `Menu`)**: Permiten la interacción del usuario a través de un menú en la pantalla OLED.
+5.  **Input/Output Interface**:
+    *   **`J3`**: Control input connector. This is where the `Stp`, `Dir`, `En` signals and power are connected from the 3D printer's mainboard or CNC controller.
+    *   **`J6`**: Output connector for the stepper motor. The 4 lines (`A+`, `A-`, `B+`, `B-`) connect to the motor's coils.
+    *   **`J2 (LCD)`**: Connector for an OLED display (I2C), which allows displaying information such as motor position, status, etc.
+    *   **`J1`**: Connector for serial communication (UART - `TX`/`RX`), probably for debugging or advanced configuration.
+    *   **Buttons (`Next`, `Enter`, `Menu`)**: Allow user interaction through a menu on the OLED display.
 
-6.  **Circuitos de Protección**:
-    *   **`D1, D2 (SMF26A, SMF5.0A)`**: Diodos de supresión de voltaje transitorio (TVS) para proteger el circuito de picos de voltaje.
-    *   **`U8, U9 (EL0631, EL357N)`**: Optoacopladores. Aíslan eléctricamente las señales de entrada (`Stp`, `Dir`, `En`) del resto del circuito, lo que ayuda a prevenir que el ruido eléctrico de la placa principal afecte al controlador del motor. La nota "Only one group of Q1,Q2,Q3 and U8,U9 can be selected for welding" indica que la placa puede ser ensamblada para usar los optoacopladores o una entrada directa con MOSFETs (`Q1-Q3`), dependiendo de la configuración deseada.
+6.  **Protection Circuits**:
+    *   **`D1, D2 (SMF26A, SMF5.0A)`**: Transient Voltage Suppression (TVS) diodes to protect the circuit from voltage spikes.
+    *   **`U8, U9 (EL0631, EL357N)`**: Optocouplers. They electrically isolate the input signals (`Stp`, `Dir`, `En`) from the rest of the circuit, which helps prevent electrical noise from the main board from affecting the motor controller. The note "Only one group of Q1,Q2,Q3 and U8,U9 can be selected for welding" indicates that the board can be assembled to use either the optocouplers or a direct input with MOSFETs (`Q1-Q3`), depending on the desired configuration.
 
-### Flujo de Operación
+### Operation Flow
 
-1.  La placa de control principal envía pulsos a la entrada `Stp` (cada pulso es un paso) y una señal en `Dir` para la dirección.
-2.  El MCU (`U1`) recibe estas señales (a través de los optoacopladores).
-3.  El MCU lee la posición actual del motor desde el encoder magnético (`U4`).
-4.  Basado en la señal de `Stp` y la posición actual, el MCU calcula cómo debe energizar las bobinas del motor para moverse un paso en la dirección correcta.
-5.  El MCU envía señales PWM (Modulación por Ancho de Pulso) a los gate drivers (`EG3013`).
-6.  Los gate drivers activan los MOSFETs del puente-H, enviando corriente a las bobinas del motor.
-7.  El motor se mueve.
-8.  El encoder magnético (`U4`) informa la nueva posición al MCU.
-9.  El MCU compara la nueva posición con la posición deseada. Si hay una diferencia (un paso perdido), puede intentar corregirlo.
-10. El ciclo se repite para cada pulso de `Stp`.
+1.  The main control board sends pulses to the `Stp` input (each pulse is one step) and a signal on `Dir` for the direction.
+2.  The MCU (`U1`) receives these signals (through the optocouplers).
+3.  The MCU reads the current motor position from the magnetic encoder (`U4`).
+4.  Based on the `Stp` signal and the current position, the MCU calculates how it should energize the motor coils to move one step in the correct direction.
+5.  The MCU sends PWM (Pulse Width Modulation) signals to the gate drivers (`EG3013`).
+6.  The gate drivers activate the H-bridge MOSFETs, sending current to the motor coils.
+7.  The motor moves.
+8.  The magnetic encoder (`U4`) reports the new position to the MCU.
+9.  The MCU compares the new position with the desired position. If there is a difference (a lost step), it can try to correct it.
+10. The cycle repeats for each `Stp` pulse.
