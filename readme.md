@@ -45,21 +45,22 @@ Servo42cFirmware/
 │   ├── driver/inc/             # Peripheral headers
 │   ├── driver/src/             # Peripheral implementations
 │   └── main.c                  # Main entry point
+├── example/                    # Peripheral examples
 ├── .cproject.yml               # Keil Studio project configuration
 └── README.md                   # This file
 ```
 
 ## Roadmap (Incremental Versions)
 
-| Version | Description                                               | Branch              |
-| ------- | --------------------------------------------------------- | ------------------- |
-| v0.1    | Blink LED D3 connected to PC14                           | `master`            |
-| v0.2    | Read buttons Next (PA09), Enter (PA10), Menu (PB04)      | `buttons`           |
-| v0.3    | Communicate with OLED display via I2C                    | `oled-display`      |
-| v0.4    | Read MT6816 encoder via SPI                              | `encoder`           |
-| v0.5    | Motor control using H-bridges and PWM generation          | `motor-control`     |
-| v0.6    | Basic UART debug communication                           | `uart-debug`        |
-| v1.0    | Full closed-loop control (encoder + motor feedback)       | `main-control-loop` |
+| Version | Description                                                 | Branch                    |
+| ------- | ----------------------------------------------------------- | ------------------------- |
+| v0.1    | Blink LED D3 connected to PC14                              | `v0.1_blinky`             |
+| v0.2    | Read buttons Next (PA09), Enter (PA10), Menu (PB04)         | `v0.2_buttons`            |
+| v0.3    | Communicate with OLED display via I2C                       | `v0.3_oled-display`       |
+| v0.4    | Read MT6816 encoder via SPI                                 | `v0.4_encoder`            |
+| v0.5    | Motor control using H-bridges and PWM generation            | `v0.5_motor-control`      |
+| v0.6    | Basic UART debug communication                              | `v0.6_uart-debug`         |
+| v0.x    | Full closed-loop control (encoder + motor feedback)         | `v0.x_main-control-loop`  |
 
 ## License
 
